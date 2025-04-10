@@ -1,0 +1,16 @@
+gunicorn
+Flask
+matplotlib
+pandas
+joblib
+seaborn
+wordcloud
+nltk
+google-play-scraper
+networkx
+gunicorn
+plotly
+scikit-learn==1.2.2
+numpy==1.25.2
+beautifulsoup4
+requests
