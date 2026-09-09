@@ -322,7 +322,7 @@ def dataset_display():
 
 
     # Render the dataset template with plots
-    return render_template('dataset.html', df=pd.read_csv('env\DVCarFraudDetection.csv'), plot1=buffer_data1, plot2=buffer_data2,
+    return render_template('dataset.html', df=df, plot1=buffer_data1, plot2=buffer_data2,
                            plot3=buffer_data3, plot4=buffer_data4, plot5=buffer_data5, plot6=buffer_data6,
                            plot7=buffer_data7, plot8=buffer_data8, plot9=buffer_data9, plot10=buffer_data10)
 
