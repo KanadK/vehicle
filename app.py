@@ -381,7 +381,10 @@ def make_prediction():
     PastNumberOfClaims = int(request.form['PastNumberOfClaims'])
 
     # Preprocess the input data
-    car_price = CarPrice / 10  # scaling car price as in your previous code
+    # No scaling: X_train.csv shows the model was fitted on raw prices
+    # (10,008-56,761). Dividing here put every request below the training
+    # minimum, so CarPrice carried no signal.
+    car_price = CarPrice
     user_input = {
         'CarCompany': [CarCompany],
         'AccidentArea': [AccidentArea],
