@@ -46,6 +46,7 @@ Built by SY CS (AIML) students at Vishwakarma Institute of Technology, Pune.
 ```
 .
 ├── app.py                      # Entire backend: routes, inference, all chart generation
+├── nltk_setup.py               # Shared NLTK corpus bootstrap (app + Docker build)
 ├── RFModel.pkl                 # Pre-trained Random Forest (41 MB, joblib)
 ├── DVCarFraudDetection.csv     # Claims dataset — 16,184 rows × 15 columns
 ├── X_train.csv                 # Training matrix; used only for its 24 column names
@@ -89,7 +90,11 @@ python app.py
 
 Then open <http://127.0.0.1:5000>.
 
-On first start the app downloads the four NLTK corpora it needs (`punkt_tab`, `stopwords`, `wordnet`, `vader_lexicon`, roughly 15 MB) into your local `nltk_data`. This happens once — subsequent starts make no network calls.
+On first start the app downloads the four NLTK corpora it needs (`punkt_tab`, `stopwords`, `wordnet`, `vader_lexicon` — about 26 MB) into your local `nltk_data`. This happens once; subsequent starts make no network calls. To fetch them ahead of time:
+
+```bash
+python nltk_setup.py
+```
 
 ### Docker
 
@@ -99,6 +104,8 @@ docker run -p 5000:5000 fraud-detection
 ```
 
 The container serves through gunicorn (2 sync workers, 120s timeout) rather than the Flask development server. `python app.py` remains the local development entry point.
+
+The NLTK corpora are baked into the image at build time via `nltk_setup.py`, so the container needs no network access at runtime and the first request is not delayed by a download. They live at `/usr/local/share/nltk_data`, published through the `NLTK_DATA` environment variable.
 
 ---
 
