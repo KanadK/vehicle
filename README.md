@@ -98,6 +98,8 @@ docker build -t fraud-detection .
 docker run -p 5000:5000 fraud-detection
 ```
 
+The container serves through gunicorn (2 sync workers, 120s timeout) rather than the Flask development server. `python app.py` remains the local development entry point.
+
 ---
 
 ## Routes
@@ -181,12 +183,10 @@ The classes are close to balanced — 7,571 fraudulent against 8,613 genuine, a 
 
 ## Known limitations
 
-- **`CarPrice` is scaled inconsistently.** `make_prediction()` divides submitted prices by 10, but `X_train.csv` shows the model was trained on unscaled prices (10,008 – 56,761). Every prediction therefore sees a price an order of magnitude below the training range, which skews results. The division should be removed.
-- **`/dataset` renders all 16,184 rows** into one HTML table, producing a ~9 MB page. The template comment says it was meant to show the first 10.
-- **The Docker image runs the Flask development server** with `debug=True`, which exposes an interactive console. `gunicorn` is in `requirements.txt` but unused.
-- **matplotlib runs without the `Agg` backend** and shares global `pyplot` state across Flask's threaded requests, so concurrent users can race.
 - **Training code is not in this repository** — only the serialised `RFModel.pkl`. No accuracy metrics are published here.
-- **`RFModel.pkl` (41 MB) is committed to git**, which makes clones slow.
+- **`RFModel.pkl` (41 MB) is committed to git**, which makes clones slow, and it unpickles only under scikit-learn 1.2.2.
+- **Prediction quality has not been re-measured** since the `CarPrice` scaling fix. The change is correct with respect to the training data, but no accuracy figure has been recomputed against the model.
+- **`requirements.txt` lists `gunicorn` twice.**
 
 ---
 
