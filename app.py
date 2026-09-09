@@ -1,4 +1,8 @@
 from flask import Flask, render_template, request
+import matplotlib
+# Select the non-GUI backend before pyplot is imported. Charts are rendered
+# in Flask worker threads, where any GUI backend is unsafe.
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 from joblib import load
