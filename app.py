@@ -18,6 +18,37 @@ from collections import Counter
 from matplotlib.sankey import Sankey
 import networkx as nx
 
+# The NLTK corpora used below are not bundled with the nltk package, so a
+# fresh machine or a fresh Docker build has to fetch them once. Without this
+# every /predict/app and /analysis/app request dies on LookupError.
+def _ensure_nltk_resource(path, package):
+    """Download `package` unless it is already present. Returns True on success."""
+    # Depending on the NLTK version some corpora stay zipped (corpora/wordnet.zip)
+    # while others are expanded (corpora/stopwords), so probe both spellings.
+    # Getting this wrong is not fatal but re-downloads on every startup.
+    for candidate in (path, path + '.zip'):
+        try:
+            nltk.data.find(candidate)
+            return True
+        except LookupError:
+            continue
+    return nltk.download(package, quiet=True)
+
+
+def ensure_nltk_data():
+    # word_tokenize() wants punkt_tab on NLTK >= 3.8.2 and punkt before that.
+    # Try the modern name first and fall back, so either version works.
+    if not _ensure_nltk_resource('tokenizers/punkt_tab', 'punkt_tab'):
+        _ensure_nltk_resource('tokenizers/punkt', 'punkt')
+
+    _ensure_nltk_resource('corpora/stopwords', 'stopwords')          # stopwords.words('english')
+    _ensure_nltk_resource('corpora/wordnet', 'wordnet')              # WordNetLemmatizer
+    _ensure_nltk_resource('sentiment/vader_lexicon', 'vader_lexicon')  # SentimentIntensityAnalyzer
+
+
+ensure_nltk_data()
+
+
 app = Flask(__name__)
 
 def preprocess_text(text):
