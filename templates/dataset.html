@@ -59,7 +59,7 @@
             </thead>
             <tbody>
                 <!-- Loop through the first 10 rows of the dataset to display -->
-                {% for index, row in df.iterrows() %}
+                {% for index, row in df.head(10).iterrows() %}
                 <tr>
                     <td>{{ row['CarCompany'] }}</td>
                     <td>{{ row['AccidentArea'] }}</td>
